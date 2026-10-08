@@ -1,17 +1,10 @@
-const Database = require("better-sqlite3");
+const mongoose = require("mongoose");
 
-const db = new Database("expenses.db");
+const MONGODB_URL = "mongodb://127.0.0.1:27017/expense_tracker";
 
-db.exec(`
-    CREATE TABLE IF NOT EXISTS expenses (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        amount REAL NOT NULL,
-        category TEXT NOT NULL,
-        description TEXT,
-        date TEXT NOT NULL
-    )
-`);
+async function connectDatabase() {
+    await mongoose.connect(MONGODB_URL);
+    console.log("Connected to MongoDB.");
+}
 
-console.log("Database connected and table ready.");
-
-module.exports = db;
+module.exports = connectDatabase;

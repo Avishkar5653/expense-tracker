@@ -1,6 +1,7 @@
 const express = require("express");
 const path = require("path");
-const db = require("./database/database");
+const connectDatabase = require("./database/database");
+const Expense = require("./database/Expense");
 
 const app = express();
 const PORT = 3000;
@@ -15,7 +16,7 @@ app.get("/api/test", (req, res) => {
     });
 });
 
-app.post("/api/expenses", (req, res) => {
+app.post("/api/expenses", async (req, res) => {
     const { amount, category, description, date } = req.body;
 
     if (!amount || !category || !date) {
@@ -24,43 +25,30 @@ app.post("/api/expenses", (req, res) => {
         });
     }
 
-    const statement = db.prepare(`
-        INSERT INTO expenses
-        (amount, category, description, date)
-        VALUES (?, ?, ?, ?)
-    `);
-
-    const result = statement.run(
-        amount,
-        category,
-        description,
-        date
-    );
+    const expense = await Expense.create({ amount, category, description, date });
 
     res.json({
         message: "Expense added successfully",
-        id: result.lastInsertRowid
+        id: expense.id
     });
 });
 
-app.get("/api/expenses", (req, res) => {
-    const expenses = db.prepare(`
-        SELECT * FROM expenses
-        ORDER BY date DESC, id DESC
-    `).all();
+app.get("/api/expenses", async (req, res) => {
+    const expenses = await Expense.find()
+        .select("-_id")
+        .sort({ date: -1, id: -1 })
+        .lean();
 
     res.json(expenses);
 });
 
-app.delete("/api/expenses/:id", (req, res) => {
-    const { id } = req.params;
+app.delete("/api/expenses/:id", async (req, res) => {
+    const id = Number(req.params.id);
+    const result = Number.isSafeInteger(id)
+        ? await Expense.deleteOne({ id })
+        : { deletedCount: 0 };
 
-    const result = db.prepare(`
-        DELETE FROM expenses
-        WHERE id = ?
-    `).run(id);
-
-    if (result.changes === 0) {
+    if (result.deletedCount === 0) {
         return res.status(404).json({
             error: "Expense not found"
         });
@@ -72,8 +60,8 @@ app.delete("/api/expenses/:id", (req, res) => {
 });
 
 // UPDATE - Edit an expense
-app.put("/api/expenses/:id", (req, res) => {
-    const { id } = req.params;
+app.put("/api/expenses/:id", async (req, res) => {
+    const id = Number(req.params.id);
 
     const { amount, category, description, date } = req.body;
 
@@ -83,25 +71,15 @@ app.put("/api/expenses/:id", (req, res) => {
         });
     }
 
-    const statement = db.prepare(`
-        UPDATE expenses
-        SET
-            amount = ?,
-            category = ?,
-            description = ?,
-            date = ?
-        WHERE id = ?
-    `);
+    const expense = Number.isSafeInteger(id)
+        ? await Expense.findOneAndUpdate(
+            { id },
+            { amount, category, description, date },
+            { new: true, runValidators: true }
+        )
+        : null;
 
-    const result = statement.run(
-        amount,
-        category,
-        description,
-        date,
-        id
-    );
-
-    if (result.changes === 0) {
+    if (!expense) {
         return res.status(404).json({
             error: "Expense not found"
         });
@@ -113,6 +91,13 @@ app.put("/api/expenses/:id", (req, res) => {
 });
 
 
-app.listen(PORT, () => {
-    console.log(`Server running at http://localhost:${PORT}`);
-});
+connectDatabase()
+    .then(() => {
+        app.listen(PORT, () => {
+            console.log(`Server running at http://localhost:${PORT}`);
+        });
+    })
+    .catch((error) => {
+        console.error("Could not connect to MongoDB:", error.message);
+        process.exit(1);
+    });
