@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="en">
 
@@ -12,204 +13,524 @@
 
 <body>
 
-    <div class="container">
+    <!-- HEADER -->
+    <header class="header">
 
-        <h1>Expense Tracker</h1>
+        <div class="header-content">
 
+            <div>
+                <p class="small-title">PERSONAL FINANCE</p>
 
-        <!-- ================================ -->
-        <!-- DASHBOARD -->
-        <!-- ================================ -->
+                <h1>Expense Tracker</h1>
 
-        <h2>Dashboard</h2>
-
-        <div class="dashboard">
-
-            <div class="card">
-                <h3>Total Expenses</h3>
-                <p>₹<span id="dashboardTotal">0</span></p>
+                <p class="header-text">
+                    Manage and track your daily expenses easily.
+                </p>
             </div>
 
-            <div class="card">
-                <h3>Today's Expenses</h3>
-                <p>₹<span id="todayTotal">0</span></p>
-            </div>
-
-            <div class="card">
-                <h3>This Month</h3>
-                <p>₹<span id="monthTotal">0</span></p>
-            </div>
-
-            <div class="card">
-                <h3>Number of Expenses</h3>
-                <p><span id="expenseCount">0</span></p>
+            <div class="header-icon">
+                ₹
             </div>
 
         </div>
 
-
-        <!-- ================================ -->
-        <!-- CATEGORY SUMMARY -->
-        <!-- ================================ -->
-
-        <h2>Category Summary</h2>
-
-        <div id="categorySummary"></div>
-
-        <h2>Expense Chart</h2>
-
-<div class="chart-container">
-    <canvas id="expenseChart"></canvas>
-</div>
+    </header>
 
 
-
-        <!-- ================================ -->
-        <!-- ADD / EDIT EXPENSE -->
-        <!-- ================================ -->
-
-        <h2>Add Expense</h2>
-
-        <form id="expenseForm">
-
-            <input
-                type="number"
-                id="amount"
-                placeholder="Amount"
-                required
-            >
-
-            <select id="category" required>
-
-                <option value="">
-                    Select Category
-                </option>
-
-                <option value="Food">
-                    Food
-                </option>
-
-                <option value="Transport">
-                    Transport
-                </option>
-
-                <option value="Shopping">
-                    Shopping
-                </option>
-
-                <option value="Bills">
-                    Bills
-                </option>
-
-                <option value="Entertainment">
-                    Entertainment
-                </option>
-
-                <option value="Other">
-                    Other
-                </option>
-
-            </select>
-
-            <input
-                type="text"
-                id="description"
-                placeholder="Description"
-            >
-
-            <input
-                type="date"
-                id="date"
-                required
-            >
-
-            <button type="submit">
-                Add Expense
-            </button>
-
-        </form>
+    <main class="container">
 
 
-        <!-- ================================ -->
+        <!-- DASHBOARD -->
+
+        <section>
+
+            <div class="section-heading">
+
+                <div>
+                    <p class="section-label">OVERVIEW</p>
+                    <h2>Dashboard</h2>
+                </div>
+
+            </div>
+
+
+            <div class="dashboard">
+
+
+                <div class="card total-card">
+
+                    <div class="card-icon">
+                        ₹
+                    </div>
+
+                    <div>
+
+                        <p class="card-title">
+                            Total Expenses
+                        </p>
+
+                        <p class="card-value">
+                            ₹<span id="dashboardTotal">0</span>
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="card today-card">
+
+                    <div class="card-icon">
+                        T
+                    </div>
+
+                    <div>
+
+                        <p class="card-title">
+                            Today's Expenses
+                        </p>
+
+                        <p class="card-value">
+                            ₹<span id="todayTotal">0</span>
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="card month-card">
+
+                    <div class="card-icon">
+                        M
+                    </div>
+
+                    <div>
+
+                        <p class="card-title">
+                            This Month
+                        </p>
+
+                        <p class="card-value">
+                            ₹<span id="monthTotal">0</span>
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="card count-card">
+
+                    <div class="card-icon">
+                        #
+                    </div>
+
+                    <div>
+
+                        <p class="card-title">
+                            Number of Expenses
+                        </p>
+
+                        <p class="card-value">
+                            <span id="expenseCount">0</span>
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+            </div>
+
+        </section>
+
+
+
+        <!-- ADD EXPENSE -->
+
+        <section class="main-section">
+
+            <div class="section-heading">
+
+                <div>
+                    <p class="section-label">
+                        TRANSACTION
+                    </p>
+
+                    <h2>Add Expense</h2>
+                </div>
+
+            </div>
+
+
+            <form id="expenseForm" class="expense-form">
+
+
+                <div class="form-group">
+
+                    <label for="amount">
+                        Amount
+                    </label>
+
+                    <input
+                        type="number"
+                        id="amount"
+                        placeholder="Enter amount"
+                        min="0"
+                        step="0.01"
+                        required
+                    >
+
+                </div>
+
+
+
+                <div class="form-group">
+
+                    <label for="category">
+                        Category
+                    </label>
+
+                    <select id="category" required>
+
+                        <option value="">
+                            Select category
+                        </option>
+
+                        <option value="Food">
+                            Food
+                        </option>
+
+                        <option value="Transport">
+                            Transport
+                        </option>
+
+                        <option value="Shopping">
+                            Shopping
+                        </option>
+
+                        <option value="Bills">
+                            Bills
+                        </option>
+
+                        <option value="Entertainment">
+                            Entertainment
+                        </option>
+
+                        <option value="Other">
+                            Other
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+
+                <div class="form-group">
+
+                    <label for="description">
+                        Description
+                    </label>
+
+                    <input
+                        type="text"
+                        id="description"
+                        placeholder="Example: Lunch with friends"
+                    >
+
+                </div>
+
+
+
+                <div class="form-group">
+
+                    <label for="date">
+                        Date
+                    </label>
+
+                    <input
+                        type="date"
+                        id="date"
+                        required
+                    >
+
+                </div>
+
+
+
+                <button
+                    type="submit"
+                    class="primary-button"
+                >
+                    Add Expense
+                </button>
+
+
+            </form>
+
+        </section>
+
+
+
+        <!-- CATEGORY + CHART -->
+
+        <div class="two-column">
+
+
+            <section class="main-section">
+
+                <div class="section-heading">
+
+                    <div>
+
+                        <p class="section-label">
+                            BREAKDOWN
+                        </p>
+
+                        <h2>
+                            Category Summary
+                        </h2>
+
+                    </div>
+
+                </div>
+
+
+                <div
+                    id="categorySummary"
+                    class="category-summary"
+                ></div>
+
+            </section>
+
+
+
+            <section class="main-section">
+
+                <div class="section-heading">
+
+                    <div>
+
+                        <p class="section-label">
+                            ANALYSIS
+                        </p>
+
+                        <h2>
+                            Expense Chart
+                        </h2>
+
+                    </div>
+
+                </div>
+
+
+                <div class="chart-container">
+
+                    <canvas id="expenseChart"></canvas>
+
+                </div>
+
+            </section>
+
+
+        </div>
+
+
+
         <!-- FILTERS -->
-        <!-- ================================ -->
 
-        <h2>Filter Expenses</h2>
-
-        <input
-            type="text"
-            id="search"
-            placeholder="Search by description..."
-        >
-
-        <select id="filterCategory">
-
-            <option value="">
-                All Categories
-            </option>
-
-            <option value="Food">
-                Food
-            </option>
-
-            <option value="Transport">
-                Transport
-            </option>
-
-            <option value="Shopping">
-                Shopping
-            </option>
-
-            <option value="Bills">
-                Bills
-            </option>
-
-            <option value="Entertainment">
-                Entertainment
-            </option>
-
-            <option value="Other">
-                Other
-            </option>
-
-        </select>
-
-        <label for="filterDate">
-            Filter by Date:
-        </label>
-
-        <input
-            type="date"
-            id="filterDate"
-        >
-
-        <button
-            type="button"
-            id="clearFilters"
-        >
-            Clear Filters
-        </button>
+        <section class="main-section">
 
 
-        <!-- ================================ -->
+            <div class="section-heading">
+
+                <div>
+
+                    <p class="section-label">
+                        SEARCH
+                    </p>
+
+                    <h2>
+                        Filter Expenses
+                    </h2>
+
+                </div>
+
+            </div>
+
+
+
+            <div class="filter-grid">
+
+
+                <div class="form-group">
+
+                    <label for="search">
+                        Search
+                    </label>
+
+                    <input
+                        type="text"
+                        id="search"
+                        placeholder="Search description..."
+                    >
+
+                </div>
+
+
+
+                <div class="form-group">
+
+                    <label for="filterCategory">
+                        Category
+                    </label>
+
+                    <select id="filterCategory">
+
+                        <option value="">
+                            All Categories
+                        </option>
+
+                        <option value="Food">
+                            Food
+                        </option>
+
+                        <option value="Transport">
+                            Transport
+                        </option>
+
+                        <option value="Shopping">
+                            Shopping
+                        </option>
+
+                        <option value="Bills">
+                            Bills
+                        </option>
+
+                        <option value="Entertainment">
+                            Entertainment
+                        </option>
+
+                        <option value="Other">
+                            Other
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+
+                <div class="form-group">
+
+                    <label for="filterDate">
+                        Date
+                    </label>
+
+                    <input
+                        type="date"
+                        id="filterDate"
+                    >
+
+                </div>
+
+
+
+                <div class="filter-button-container">
+
+                    <button
+                        type="button"
+                        id="clearFilters"
+                        class="secondary-button"
+                    >
+                        Clear Filters
+                    </button>
+
+                </div>
+
+
+            </div>
+
+        </section>
+
+
+
         <!-- EXPENSE LIST -->
-        <!-- ================================ -->
 
-        <h2>Expenses</h2>
+        <section class="main-section">
 
-        <div id="expenseList"></div>
 
-        <h2>
-            Filtered Total: ₹<span id="total">0</span>
-        </h2>
+            <div class="expense-heading">
 
-    </div>
 
+                <div>
+
+                    <p class="section-label">
+                        TRANSACTIONS
+                    </p>
+
+                    <h2>
+                        Expenses
+                    </h2>
+
+                </div>
+
+
+
+                <div class="filtered-total">
+
+                    <span>
+                        Filtered Total
+                    </span>
+
+                    <strong>
+                        ₹<span id="total">0</span>
+                    </strong>
+
+                </div>
+
+
+            </div>
+
+
+
+            <div
+                id="expenseList"
+                class="expense-list"
+            ></div>
+
+
+        </section>
+
+
+    </main>
+
+
+
+    <!-- FOOTER -->
+
+    <footer class="footer">
+
+        <p>
+            Expense Tracker • Built with HTML, CSS, JavaScript & MongoDB
+        </p>
+
+    </footer>
+
+
+
+    <!-- CHART.JS -->
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script src="script.js"></script>
+
+    <!-- OUR JAVASCRIPT -->
+
+    <script src="script.js"></script>
 
 
 </body>
 
 </html>
+```

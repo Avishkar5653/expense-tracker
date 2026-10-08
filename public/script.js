@@ -1,576 +1,539 @@
-const form = document.getElementById("expenseForm");
-const expenseList = document.getElementById("expenseList");
-const totalElement = document.getElementById("total");
-
-const searchInput = document.getElementById("search");
-const filterCategory = document.getElementById("filterCategory");
-const filterDate = document.getElementById("filterDate");
-const clearFiltersButton = document.getElementById("clearFilters");
-
-const dashboardTotal = document.getElementById("dashboardTotal");
-const todayTotal = document.getElementById("todayTotal");
-const monthTotal = document.getElementById("monthTotal");
-const expenseCount = document.getElementById("expenseCount");
-const categorySummary = document.getElementById("categorySummary");
-
-let editingExpenseId = null;
-let allExpenses = [];
-
-let expenseChart = null;
+let expenses = [];
+let chart;
 
 
-
-// ========================================
-// LOAD EXPENSES
-// ========================================
-
+// Load expenses
 async function loadExpenses() {
+    try {
+        const response = await fetch("/api/expenses");
+        expenses = await response.json();
 
-    const response = await fetch("/api/expenses");
+        displayExpenses(expenses);
+        updateDashboard(expenses);
+        updateCategorySummary(expenses);
+        updateChart(expenses);
 
-    allExpenses = await response.json();
-
-    displayExpenses(allExpenses);
-
-    updateDashboard();
+    } catch (error) {
+        console.log("Error loading expenses:", error);
+    }
 }
 
 
-// ========================================
-// DISPLAY EXPENSES
-// ========================================
+// Display expenses
+function displayExpenses(data) {
 
-function displayExpenses(expenses) {
+    const expenseList = document.getElementById("expenseList");
 
     expenseList.innerHTML = "";
 
-    let total = 0;
+    if (data.length === 0) {
+        expenseList.innerHTML = "<p class='empty-message'>No expenses found.</p>";
+        return;
+    }
+
+    data.forEach(function(expense) {
+
+        const item = document.createElement("div");
+
+        item.className = "expense-item";
+
+        const info = document.createElement("div");
+        info.className = "expense-info";
+
+        const top = document.createElement("div");
+        top.className = "expense-top";
+
+        const amount = document.createElement("span");
+        amount.className = "expense-amount";
+        amount.textContent = "₹" + Number(expense.amount).toFixed(2);
+
+        const category = document.createElement("span");
+        category.className = "expense-category";
+        category.textContent = expense.category;
+
+        top.appendChild(amount);
+        top.appendChild(category);
+
+        const description = document.createElement("div");
+        description.className = "expense-description";
+        description.textContent = expense.description || "No description";
+
+        const date = document.createElement("div");
+        date.className = "expense-date";
+        date.textContent = expense.date;
+
+        info.appendChild(top);
+        info.appendChild(description);
+        info.appendChild(date);
 
 
-    if (expenses.length === 0) {
+        const actions = document.createElement("div");
+        actions.className = "expense-actions";
 
-        expenseList.innerHTML = `
-            <p>No expenses found.</p>
-        `;
 
-        totalElement.textContent = "0";
+        const editButton = document.createElement("button");
+        editButton.className = "edit-button";
+        editButton.textContent = "Edit";
 
+        editButton.onclick = function() {
+            editExpense(expense._id);
+        };
+
+
+        const deleteButton = document.createElement("button");
+        deleteButton.className = "delete-button";
+        deleteButton.textContent = "Delete";
+
+        deleteButton.onclick = function() {
+            deleteExpense(expense._id);
+        };
+
+
+        actions.appendChild(editButton);
+        actions.appendChild(deleteButton);
+
+
+        item.appendChild(info);
+        item.appendChild(actions);
+
+        expenseList.appendChild(item);
+    });
+}
+
+
+// Add or update expense
+document.getElementById("expenseForm").addEventListener("submit", async function(event) {
+
+    event.preventDefault();
+
+    const amount = document.getElementById("amount").value;
+    const category = document.getElementById("category").value;
+    const description = document.getElementById("description").value;
+    const date = document.getElementById("date").value;
+
+    const form = document.getElementById("expenseForm");
+
+    const expenseId = form.dataset.editingId;
+
+
+    const expenseData = {
+        amount: Number(amount),
+        category: category,
+        description: description,
+        date: date
+    };
+
+
+    try {
+
+        let response;
+
+
+        if (expenseId) {
+
+            response = await fetch("/api/expenses/" + expenseId, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(expenseData)
+            });
+
+        } else {
+
+            response = await fetch("/api/expenses", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(expenseData)
+            });
+        }
+
+
+        if (!response.ok) {
+            throw new Error("Failed to save expense");
+        }
+
+
+        document.getElementById("expenseForm").reset();
+
+        delete form.dataset.editingId;
+
+
+        const submitButton = document.querySelector(
+            "#expenseForm button[type='submit']"
+        );
+
+        if (submitButton) {
+            submitButton.textContent = "Add Expense";
+        }
+
+
+        loadExpenses();
+
+
+    } catch (error) {
+
+        console.log("Error saving expense:", error);
+
+        alert("Unable to save expense.");
+
+    }
+
+});
+
+
+// Edit expense
+function editExpense(id) {
+
+    const expense = expenses.find(function(item) {
+        return item._id === id;
+    });
+
+
+    if (!expense) {
         return;
     }
 
 
-    expenses.forEach((expense) => {
+    document.getElementById("amount").value = expense.amount;
 
-        total += Number(expense.amount);
+    document.getElementById("category").value = expense.category;
 
-        const div = document.createElement("div");
+    document.getElementById("description").value =
+        expense.description || "";
 
-        div.innerHTML = `
-            <strong>₹${expense.amount}</strong>
-            - ${expense.category}
-
-            <p>${expense.description || ""}</p>
-
-            <small>${expense.date}</small>
-
-            <br>
-
-            <button onclick="editExpense(${expense.id})">
-                Edit
-            </button>
-
-            <button onclick="deleteExpense(${expense.id})">
-                Delete
-            </button>
-
-            <hr>
-        `;
-
-        expenseList.appendChild(div);
-    });
+    document.getElementById("date").value = expense.date;
 
 
-    totalElement.textContent = total;
+    document.getElementById("expenseForm").dataset.editingId = id;
+
+
+    const submitButton = document.querySelector(
+        "#expenseForm button[type='submit']"
+    );
+
+
+    if (submitButton) {
+        submitButton.textContent = "Update Expense";
+    }
+
+
+    window.scrollTo(0, 0);
 }
 
 
-// ========================================
-// DASHBOARD
-// ========================================
+// Delete expense
+async function deleteExpense(id) {
 
-function updateDashboard() {
+    const confirmDelete = confirm(
+        "Are you sure you want to delete this expense?"
+    );
+
+
+    if (!confirmDelete) {
+        return;
+    }
+
+
+    try {
+
+        const response = await fetch(
+            "/api/expenses/" + id,
+            {
+                method: "DELETE"
+            }
+        );
+
+
+        if (!response.ok) {
+            throw new Error("Failed to delete expense");
+        }
+
+
+        loadExpenses();
+
+
+    } catch (error) {
+
+        console.log("Error deleting expense:", error);
+
+        alert("Unable to delete expense.");
+
+    }
+}
+
+
+// Update dashboard
+function updateDashboard(data) {
 
     let total = 0;
-    let todayTotalAmount = 0;
-    let monthTotalAmount = 0;
-
-    const categoryTotals = {};
+    let todayTotal = 0;
+    let monthTotal = 0;
 
 
-    const now = new Date();
+    const today = new Date();
 
-    const today = now.toISOString().split("T")[0];
-
-    const currentMonth =
-        now.getFullYear() +
-        "-" +
-        String(now.getMonth() + 1).padStart(2, "0");
+    const todayString =
+        today.toISOString().split("T")[0];
 
 
-    allExpenses.forEach((expense) => {
+    const currentMonth = today.getMonth();
+    const currentYear = today.getFullYear();
+
+
+    data.forEach(function(expense) {
 
         const amount = Number(expense.amount);
 
-        total += amount;
+        total = total + amount;
 
 
-        // Today's expenses
-
-        if (expense.date === today) {
-
-            todayTotalAmount += amount;
-
+        if (expense.date === todayString) {
+            todayTotal = todayTotal + amount;
         }
 
 
-        // This month's expenses
+        const expenseDate = new Date(expense.date);
 
-        if (expense.date.startsWith(currentMonth)) {
 
-            monthTotalAmount += amount;
-
+        if (
+            expenseDate.getMonth() === currentMonth &&
+            expenseDate.getFullYear() === currentYear
+        ) {
+            monthTotal = monthTotal + amount;
         }
-
-
-        // Category totals
-
-        if (!categoryTotals[expense.category]) {
-
-            categoryTotals[expense.category] = 0;
-
-        }
-
-        categoryTotals[expense.category] += amount;
 
     });
 
 
-    dashboardTotal.textContent = total;
-
-    todayTotal.textContent = todayTotalAmount;
-
-    monthTotal.textContent = monthTotalAmount;
-
-    expenseCount.textContent = allExpenses.length;
+    document.getElementById("dashboardTotal").textContent =
+        "₹" + total.toFixed(2);
 
 
-    // Category summary
+    document.getElementById("todayTotal").textContent =
+        "₹" + todayTotal.toFixed(2);
+
+
+    document.getElementById("monthTotal").textContent =
+        "₹" + monthTotal.toFixed(2);
+
+
+    document.getElementById("expenseCount").textContent =
+        data.length;
+}
+
+
+// Category summary
+function updateCategorySummary(data) {
+
+    const categorySummary =
+        document.getElementById("categorySummary");
+
+
+    const categories = {};
+
+
+    data.forEach(function(expense) {
+
+        if (!categories[expense.category]) {
+            categories[expense.category] = 0;
+        }
+
+
+        categories[expense.category] =
+            categories[expense.category] +
+            Number(expense.amount);
+
+    });
+
 
     categorySummary.innerHTML = "";
 
 
-    Object.keys(categoryTotals).forEach((category) => {
+    for (const category in categories) {
 
-        const div = document.createElement("div");
+        const item = document.createElement("div");
 
-        div.className = "category-row";
+        item.className = "summary-item";
 
-        div.innerHTML = `
-            <strong>${category}</strong>
-            <span>₹${categoryTotals[category]}</span>
-        `;
 
-        categorySummary.appendChild(div);
+        const name = document.createElement("span");
+
+        name.textContent = category;
+
+
+        const amount = document.createElement("strong");
+
+        amount.textContent =
+            "₹" + categories[category].toFixed(2);
+
+
+        item.appendChild(name);
+        item.appendChild(amount);
+
+        categorySummary.appendChild(item);
+    }
+}
+
+
+// Update chart
+function updateChart(data) {
+
+    const categoryTotals = {};
+
+
+    data.forEach(function(expense) {
+
+        if (!categoryTotals[expense.category]) {
+            categoryTotals[expense.category] = 0;
+        }
+
+
+        categoryTotals[expense.category] =
+            categoryTotals[expense.category] +
+            Number(expense.amount);
 
     });
 
 
-    if (Object.keys(categoryTotals).length === 0) {
+    const labels = Object.keys(categoryTotals);
 
-        categorySummary.innerHTML =
-            "<p>No expenses yet.</p>";
-
-    }
-
-    updateChart(categoryTotals);
-
-}
-
-function updateChart(categoryTotals) {
-
-    const canvas = document.getElementById("expenseChart");
-
-    const categories = Object.keys(categoryTotals);
-
-    const amounts = Object.values(categoryTotals);
+    const values = Object.values(categoryTotals);
 
 
-    if (expenseChart !== null) {
-
-        expenseChart.destroy();
-
-    }
+    const canvas =
+        document.getElementById("expenseChart");
 
 
-    if (categories.length === 0) {
-
+    if (!canvas) {
         return;
-
     }
 
 
-    expenseChart = new Chart(canvas, {
+    if (chart) {
+        chart.destroy();
+    }
+
+
+    chart = new Chart(canvas, {
 
         type: "doughnut",
 
         data: {
 
-            labels: categories,
+            labels: labels,
 
-            datasets: [
-                {
-                    label: "Expenses",
+            datasets: [{
+                data: values,
 
-                    data: amounts,
-
-                    backgroundColor: [
-                        "#2563eb",
-                        "#16a34a",
-                        "#f59e0b",
-                        "#dc2626",
-                        "#9333ea",
-                        "#0891b2"
-                    ],
-
-                    borderWidth: 1
-                }
-            ]
-
+                backgroundColor: [
+                    "#2563eb",
+                    "#059669",
+                    "#7c3aed",
+                    "#ea580c",
+                    "#dc2626",
+                    "#0891b2"
+                ]
+            }]
         },
 
         options: {
-
             responsive: true,
-
-            plugins: {
-
-                legend: {
-                    position: "bottom"
-                }
-
-            }
-
+            maintainAspectRatio: false
         }
 
     });
 }
 
 
-
-// ========================================
-// FILTER EXPENSES
-// ========================================
-
-function filterExpenses() {
+// Apply filters
+function applyFilters() {
 
     const searchText =
-        searchInput.value.toLowerCase();
+        document.getElementById("search").value.toLowerCase();
 
-    const selectedCategory =
-        filterCategory.value;
 
-    const selectedDate =
-        filterDate.value;
+    const category =
+        document.getElementById("filterCategory").value;
 
 
-    const filteredExpenses = allExpenses.filter(
-        (expense) => {
+    const date =
+        document.getElementById("filterDate").value;
 
-            const description =
-                (expense.description || "")
-                    .toLowerCase();
 
+    const filtered = expenses.filter(function(expense) {
 
-            const matchesSearch =
-                description.includes(searchText);
+        const description =
+            expense.description || "";
 
 
-            const matchesCategory =
-                selectedCategory === "" ||
-                expense.category === selectedCategory;
+        const matchesSearch =
+            expense.category.toLowerCase().includes(searchText) ||
+            description.toLowerCase().includes(searchText);
 
 
-            const matchesDate =
-                selectedDate === "" ||
-                expense.date === selectedDate;
+        const matchesCategory =
+            category === "" ||
+            expense.category === category;
 
 
-            return (
-                matchesSearch &&
-                matchesCategory &&
-                matchesDate
-            );
-        }
-    );
+        const matchesDate =
+            date === "" ||
+            expense.date === date;
 
 
-    displayExpenses(filteredExpenses);
-}
-
-
-// ========================================
-// SEARCH
-// ========================================
-
-searchInput.addEventListener(
-    "input",
-    filterExpenses
-);
-
-
-// ========================================
-// CATEGORY FILTER
-// ========================================
-
-filterCategory.addEventListener(
-    "change",
-    filterExpenses
-);
-
-
-// ========================================
-// DATE FILTER
-// ========================================
-
-filterDate.addEventListener(
-    "change",
-    filterExpenses
-);
-
-
-// ========================================
-// CLEAR FILTERS
-// ========================================
-
-clearFiltersButton.addEventListener(
-    "click",
-    () => {
-
-        searchInput.value = "";
-
-        filterCategory.value = "";
-
-        filterDate.value = "";
-
-        displayExpenses(allExpenses);
-    }
-);
-
-
-// ========================================
-// CREATE / UPDATE
-// ========================================
-
-form.addEventListener(
-    "submit",
-    async (event) => {
-
-        event.preventDefault();
-
-
-        const expense = {
-
-            amount:
-                document.getElementById("amount").value,
-
-            category:
-                document.getElementById("category").value,
-
-            description:
-                document.getElementById("description").value,
-
-            date:
-                document.getElementById("date").value
-
-        };
-
-
-        // UPDATE
-
-        if (editingExpenseId !== null) {
-
-            const response = await fetch(
-                `/api/expenses/${editingExpenseId}`,
-                {
-                    method: "PUT",
-
-                    headers: {
-                        "Content-Type":
-                            "application/json"
-                    },
-
-                    body:
-                        JSON.stringify(expense)
-                }
-            );
-
-
-            const data =
-                await response.json();
-
-
-            if (response.ok) {
-
-                alert(
-                    "Expense updated successfully!"
-                );
-
-                editingExpenseId = null;
-
-                form.reset();
-
-                document.querySelector(
-                    "#expenseForm button[type='submit']"
-                ).textContent = "Add Expense";
-
-                loadExpenses();
-
-            } else {
-
-                alert(data.error);
-
-            }
-
-            return;
-        }
-
-
-        // CREATE
-
-        const response = await fetch(
-            "/api/expenses",
-            {
-                method: "POST",
-
-                headers: {
-                    "Content-Type":
-                        "application/json"
-                },
-
-                body:
-                    JSON.stringify(expense)
-            }
+        return (
+            matchesSearch &&
+            matchesCategory &&
+            matchesDate
         );
 
-
-        const data =
-            await response.json();
-
-
-        if (response.ok) {
-
-            alert(
-                "Expense added successfully!"
-            );
-
-            form.reset();
-
-            loadExpenses();
-
-        } else {
-
-            alert(data.error);
-
-        }
-
-    }
-);
-
-
-// ========================================
-// EDIT
-// ========================================
-
-async function editExpense(id) {
-
-    const expense =
-        allExpenses.find(
-            (item) => item.id === id
-        );
-
-
-    if (!expense) {
-
-        alert("Expense not found!");
-
-        return;
-    }
-
-
-    editingExpenseId = id;
-
-
-    document.getElementById("amount").value =
-        expense.amount;
-
-    document.getElementById("category").value =
-        expense.category;
-
-    document.getElementById("description").value =
-        expense.description || "";
-
-    document.getElementById("date").value =
-        expense.date;
-
-
-    document.querySelector(
-        "#expenseForm button[type='submit']"
-    ).textContent = "Update Expense";
-
-
-    window.scrollTo({
-        top: 0,
-        behavior: "smooth"
     });
+
+
+    displayExpenses(filtered);
 }
 
 
-// ========================================
-// DELETE
-// ========================================
-
-async function deleteExpense(id) {
-
-    const response = await fetch(
-        `/api/expenses/${id}`,
-        {
-            method: "DELETE"
-        }
-    );
+// Search
+document.getElementById("search").addEventListener(
+    "input",
+    applyFilters
+);
 
 
-    const data =
-        await response.json();
+// Category filter
+document.getElementById("filterCategory").addEventListener(
+    "change",
+    applyFilters
+);
 
 
-    if (response.ok) {
+// Date filter
+document.getElementById("filterDate").addEventListener(
+    "change",
+    applyFilters
+);
 
-        alert(
-            "Expense deleted successfully!"
-        );
 
-        loadExpenses();
+// Clear filters
+document.getElementById("clearFilters").addEventListener(
+    "click",
+    function() {
 
-    } else {
+        document.getElementById("search").value = "";
 
-        alert(data.error);
+        document.getElementById("filterCategory").value = "";
+
+        document.getElementById("filterDate").value = "";
+
+        displayExpenses(expenses);
 
     }
-}
+);
 
 
-// ========================================
-// INITIAL LOAD
-// ========================================
-
+// Start application
 loadExpenses();

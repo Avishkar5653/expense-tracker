@@ -1,16 +1,144 @@
-body {
-    font-family: Arial, sans-serif;
-    background: #f4f4f4;
-    margin: 0;
+```css
+/* ========================================
+   BASIC SETTINGS
+======================================== */
+
+* {
+    box-sizing: border-box;
 }
+
+body {
+    margin: 0;
+
+    font-family: Arial, Helvetica, sans-serif;
+
+    background: #f1f5f9;
+
+    color: #1e293b;
+}
+
+
+/* ========================================
+   HEADER
+======================================== */
+
+.header {
+    background: #172554;
+
+    color: white;
+
+    padding: 35px 20px;
+}
+
+.header-content {
+    width: 90%;
+
+    max-width: 1100px;
+
+    margin: auto;
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+}
+
+.small-title {
+    font-size: 12px;
+
+    letter-spacing: 2px;
+
+    margin: 0 0 8px;
+
+    color: #93c5fd;
+
+    font-weight: bold;
+}
+
+.header h1 {
+    margin: 0;
+
+    font-size: 32px;
+}
+
+.header-text {
+    margin: 8px 0 0;
+
+    color: #cbd5e1;
+}
+
+.header-icon {
+    width: 60px;
+
+    height: 60px;
+
+    display: flex;
+
+    justify-content: center;
+
+    align-items: center;
+
+    background: #2563eb;
+
+    border-radius: 15px;
+
+    font-size: 28px;
+
+    font-weight: bold;
+}
+
+
+/* ========================================
+   MAIN CONTAINER
+======================================== */
 
 .container {
     width: 90%;
-    max-width: 900px;
-    margin: 40px auto;
+
+    max-width: 1100px;
+
+    margin: 35px auto;
+}
+
+
+/* ========================================
+   SECTION
+======================================== */
+
+.main-section {
     background: white;
-    padding: 30px;
-    border-radius: 10px;
+
+    padding: 25px;
+
+    border-radius: 14px;
+
+    margin-top: 25px;
+
+    box-shadow:
+        0 4px 15px rgba(15, 23, 42, 0.06);
+}
+
+.section-heading {
+    margin-bottom: 20px;
+}
+
+.section-label {
+    color: #2563eb;
+
+    font-size: 11px;
+
+    font-weight: bold;
+
+    letter-spacing: 1.5px;
+
+    margin: 0 0 5px;
+}
+
+h2 {
+    margin: 0;
+
+    font-size: 23px;
 }
 
 
@@ -20,27 +148,178 @@ body {
 
 .dashboard {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 15px;
-    margin-bottom: 30px;
+
+    grid-template-columns:
+        repeat(4, 1fr);
+
+    gap: 18px;
 }
 
 .card {
-    background: #2563eb;
+    padding: 22px;
+
+    border-radius: 14px;
+
     color: white;
-    padding: 20px;
-    border-radius: 10px;
-    text-align: center;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 15px;
 }
 
-.card h3 {
+.total-card {
+    background: #2563eb;
+}
+
+.today-card {
+    background: #059669;
+}
+
+.month-card {
+    background: #7c3aed;
+}
+
+.count-card {
+    background: #ea580c;
+}
+
+.card-icon {
+    width: 45px;
+
+    height: 45px;
+
+    display: flex;
+
+    justify-content: center;
+
+    align-items: center;
+
+    background: rgba(255, 255, 255, 0.2);
+
+    border-radius: 10px;
+
+    font-size: 19px;
+
+    font-weight: bold;
+}
+
+.card-title {
+    margin: 0 0 6px;
+
+    font-size: 13px;
+
+    color: #e0e7ff;
+}
+
+.card-value {
+    margin: 0;
+
+    font-size: 24px;
+
+    font-weight: bold;
+}
+
+
+/* ========================================
+   TWO COLUMN AREA
+======================================== */
+
+.two-column {
+    display: grid;
+
+    grid-template-columns:
+        1fr 1fr;
+
+    gap: 25px;
+
+    margin-top: 25px;
+}
+
+.two-column .main-section {
     margin-top: 0;
 }
 
-.card p {
-    font-size: 28px;
+
+/* ========================================
+   FORM
+======================================== */
+
+.expense-form {
+    display: grid;
+
+    grid-template-columns:
+        1fr 1fr;
+
+    gap: 18px;
+}
+
+.form-group {
+    display: flex;
+
+    flex-direction: column;
+}
+
+.form-group label {
+    font-size: 14px;
+
     font-weight: bold;
-    margin-bottom: 0;
+
+    margin-bottom: 7px;
+
+    color: #334155;
+}
+
+input,
+select {
+    width: 100%;
+
+    padding: 12px 13px;
+
+    border: 1px solid #cbd5e1;
+
+    border-radius: 8px;
+
+    background: white;
+
+    font-size: 14px;
+
+    color: #1e293b;
+
+    outline: none;
+}
+
+input:focus,
+select:focus {
+    border-color: #2563eb;
+
+    box-shadow:
+        0 0 0 2px rgba(37, 99, 235, 0.12);
+}
+
+.primary-button {
+    border: none;
+
+    background: #2563eb;
+
+    color: white;
+
+    padding: 13px;
+
+    border-radius: 8px;
+
+    font-size: 15px;
+
+    font-weight: bold;
+
+    cursor: pointer;
+
+    align-self: end;
+}
+
+.primary-button:hover {
+    background: #1d4ed8;
 }
 
 
@@ -48,39 +327,91 @@ body {
    CATEGORY SUMMARY
 ======================================== */
 
+.category-summary {
+    min-height: 120px;
+}
+
 .category-row {
     display: flex;
+
     justify-content: space-between;
-    background: #f3f4f6;
-    padding: 12px;
-    margin: 8px 0;
-    border-radius: 5px;
+
+    align-items: center;
+
+    background: #f8fafc;
+
+    padding: 14px;
+
+    margin-bottom: 10px;
+
+    border-radius: 8px;
+
+    border-left: 4px solid #2563eb;
+}
+
+.category-row strong {
+    color: #334155;
+}
+
+.category-row span {
+    font-weight: bold;
+
+    color: #2563eb;
 }
 
 
 /* ========================================
-   FORM ELEMENTS
+   CHART
 ======================================== */
 
-input,
-select,
-button {
+.chart-container {
     width: 100%;
+
+    max-width: 350px;
+
+    margin: 0 auto;
+}
+
+
+/* ========================================
+   FILTERS
+======================================== */
+
+.filter-grid {
+    display: grid;
+
+    grid-template-columns:
+        1.5fr 1fr 1fr 0.8fr;
+
+    gap: 15px;
+
+    align-items: end;
+}
+
+.secondary-button {
+    width: 100%;
+
     padding: 12px;
-    margin: 8px 0;
-    box-sizing: border-box;
-}
 
-button {
-    background: #2563eb;
-    color: white;
     border: none;
+
+    border-radius: 8px;
+
+    background: #64748b;
+
+    color: white;
+
+    font-size: 14px;
+
     cursor: pointer;
-    border-radius: 5px;
 }
 
-button:hover {
-    background: #1d4ed8;
+.secondary-button:hover {
+    background: #475569;
+}
+
+.filter-button-container {
+    padding-bottom: 0;
 }
 
 
@@ -88,27 +419,198 @@ button:hover {
    EXPENSE LIST
 ======================================== */
 
-hr {
-    border: none;
-    border-top: 1px solid #ddd;
-    margin: 20px 0;
+.expense-heading {
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    margin-bottom: 20px;
 }
 
-#expenseList > div {
-    padding: 10px 0;
+.filtered-total {
+    text-align: right;
+}
+
+.filtered-total span {
+    display: block;
+
+    color: #64748b;
+
+    font-size: 12px;
+}
+
+.filtered-total strong {
+    color: #2563eb;
+
+    font-size: 22px;
+}
+
+.expense-list {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 12px;
+}
+
+.expense-item {
+    background: #f8fafc;
+
+    border: 1px solid #e2e8f0;
+
+    border-radius: 10px;
+
+    padding: 17px;
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    gap: 15px;
+}
+
+.expense-info {
+    flex: 1;
+}
+
+.expense-top {
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+
+    margin-bottom: 6px;
+}
+
+.expense-amount {
+    font-size: 18px;
+
+    font-weight: bold;
+
+    color: #0f172a;
+}
+
+.expense-category {
+    background: #dbeafe;
+
+    color: #1d4ed8;
+
+    padding: 4px 9px;
+
+    border-radius: 20px;
+
+    font-size: 12px;
+
+    font-weight: bold;
+}
+
+.expense-description {
+    margin: 4px 0;
+
+    color: #475569;
+
+    font-size: 14px;
+}
+
+.expense-date {
+    color: #94a3b8;
+
+    font-size: 12px;
+}
+
+.expense-actions {
+    display: flex;
+
+    gap: 8px;
+}
+
+.edit-button,
+.delete-button {
+    border: none;
+
+    padding: 8px 12px;
+
+    border-radius: 6px;
+
+    color: white;
+
+    cursor: pointer;
+
+    font-size: 12px;
+
+    font-weight: bold;
+}
+
+.edit-button {
+    background: #2563eb;
+}
+
+.edit-button:hover {
+    background: #1d4ed8;
+}
+
+.delete-button {
+    background: #dc2626;
+}
+
+.delete-button:hover {
+    background: #b91c1c;
 }
 
 
 /* ========================================
-   CLEAR FILTER BUTTON
+   EMPTY MESSAGE
 ======================================== */
 
-#clearFilters {
-    background: #6b7280;
+.empty-message {
+    text-align: center;
+
+    padding: 35px 20px;
+
+    color: #64748b;
+
+    background: #f8fafc;
+
+    border-radius: 10px;
 }
 
-#clearFilters:hover {
-    background: #4b5563;
+
+/* ========================================
+   FOOTER
+======================================== */
+
+.footer {
+    text-align: center;
+
+    padding: 25px;
+
+    color: #64748b;
+
+    font-size: 13px;
+}
+
+
+/* ========================================
+   TABLET
+======================================== */
+
+@media (max-width: 900px) {
+
+    .dashboard {
+        grid-template-columns:
+            repeat(2, 1fr);
+    }
+
+    .filter-grid {
+        grid-template-columns:
+            1fr 1fr;
+    }
+
 }
 
 
@@ -116,22 +618,81 @@ hr {
    MOBILE
 ======================================== */
 
-@media (max-width: 600px) {
+@media (max-width: 700px) {
+
+    .header-content {
+        width: 90%;
+    }
+
+    .header h1 {
+        font-size: 26px;
+    }
+
+    .two-column {
+        grid-template-columns: 1fr;
+    }
+
+    .expense-form {
+        grid-template-columns: 1fr;
+    }
+
+    .primary-button {
+        width: 100%;
+    }
+
+    .expense-item {
+        flex-direction: column;
+
+        align-items: flex-start;
+    }
+
+    .expense-actions {
+        width: 100%;
+    }
+
+    .edit-button,
+    .delete-button {
+        flex: 1;
+    }
+
+}
+
+
+/* ========================================
+   SMALL MOBILE
+======================================== */
+
+@media (max-width: 550px) {
 
     .container {
-        width: 85%;
+        width: 94%;
+
         margin: 20px auto;
-        padding: 20px;
+    }
+
+    .main-section {
+        padding: 18px;
     }
 
     .dashboard {
         grid-template-columns: 1fr;
     }
 
-}
+    .filter-grid {
+        grid-template-columns: 1fr;
+    }
 
-.chart-container {
-    width: 100%;
-    max-width: 500px;
-    margin: 20px auto;
+    .expense-heading {
+        flex-direction: column;
+
+        align-items: flex-start;
+
+        gap: 12px;
+    }
+
+    .filtered-total {
+        text-align: left;
+    }
+
 }
+```
